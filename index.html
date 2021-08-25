@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<head>
+    <h1>Screen Recorder</h1>
+    <title>Screen Recorder</title>
+</head>
+<link rel="stylesheet" href="style.css">
+<style>
+</style>
+<body>
+    <div class="half-1">
+        <button id="Start-video" class="button">Start Recording</button>
+        <button id="Stop-video" class="button"disabled >Stop Recording</button>
+    </div>
+    <div class="half-2">
+        <video id="video" controls></video>
+    </div>
+<script>
+    const startvideo=document.getElementById("Start-video");
+    const stopvideo=document.getElementById("Stop-video");
+    const video=document.getElementById("video"); 
+    var mediaRecorder,stream;
+
+    startvideo.addEventListener("click",function(e)
+    {    
+        start();
+    });
+
+    stopvideo.addEventListener("click",function(e)
+    {        
+        mediaRecorder.stop();
+        stream.getVideoTracks()[0].stop();
+        stopvideo.setAttribute("disabled", true);
+        startvideo.removeAttribute("disabled");
+
+    });
+
+    const start=async()=>
+    {
+        stream=await navigator.mediaDevices.getDisplayMedia(
+            {
+                video:
+                {
+                    MediaSource:"screen",
+                }
+            });
+        mediaRecorder=new MediaRecorder(stream);
+        mediaRecorder.ondataavailable=(e)=>
+        {
+            data.push(e.data);
+        }
+        mediaRecorder.start();
+        const data=[];
+        startvideo.setAttribute("disabled", true);
+        stopvideo.removeAttribute("disabled");
+        mediaRecorder.onstop=(e)=>
+         {
+            video.src=URL.createObjectURL(
+                new Blob(data,{
+                    type:data[0].type,
+                })
+            )
+         }
+    };
+</script>
+</body>
+</html>
